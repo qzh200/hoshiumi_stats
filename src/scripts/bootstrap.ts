@@ -60,22 +60,40 @@ async function loadHostnames(): Promise<void> {
   const total = filtered.reduce((s, m) => s + m.y, 0) || 1;
   const max = Math.max(...filtered.map((m) => m.y), 1);
 
-  filtered
-    .sort((a, b) => b.y - a.y)
-    .forEach((entry) => {
-      const li = document.querySelector<HTMLElement>(`[data-hostname="${entry.x}"]`);
-      if (!li) return;
-      const valEl = li.querySelector<HTMLElement>('[data-hostname-value]');
-      const fillEl = li.querySelector<HTMLElement>('[data-hostname-fill]');
-      if (valEl) valEl.textContent = formatInt(entry.y);
-      if (fillEl) {
-        // 进度条用 max 归一化(更易看出差距),旁边额外用占比 tooltip
-        const pct = Math.max(4, (entry.y / max) * 100);
-        fillEl.style.width = `${pct}%`;
-        fillEl.setAttribute('data-percent-of-total', `${((entry.y / total) * 100).toFixed(1)}%`);
-        fillEl.title = `占总访问 ${((entry.y / total) * 100).toFixed(1)}%`;
-      }
-    });
+  const sorted = filtered.sort((a, b) => b.y - a.y);
+  sorted.forEach((entry) => {
+    const li = document.querySelector<HTMLElement>(`[data-hostname="${entry.x}"]`);
+    if (!li) return;
+    const valEl = li.querySelector<HTMLElement>('[data-hostname-value]');
+    const fillEl = li.querySelector<HTMLElement>('[data-hostname-fill]');
+    if (valEl) valEl.textContent = formatInt(entry.y);
+    if (fillEl) {
+      // 进度条用 max 归一化(更易看出差距),旁边额外用占比 tooltip
+      const pct = Math.max(4, (entry.y / max) * 100);
+      fillEl.style.width = `${pct}%`;
+      fillEl.setAttribute('data-percent-of-total', `${((entry.y / total) * 100).toFixed(1)}%`);
+      fillEl.title = `占总访问 ${((entry.y / total) * 100).toFixed(1)}%`;
+    }
+  });
+
+  // 重排 DOM:有数据按 y 降序在前,无数据服务(yaml 配置但 24h 0 访问)按 yaml 原序
+  // 排在末尾;appendChild 对已存在的元素是 move,不会 clone
+  const ul = document.getElementById('hostname-list');
+  if (ul) {
+    const presentDomains = new Set(sorted.map((m) => m.x));
+    const configDomains = Array.from(
+      ul.querySelectorAll<HTMLElement>('[data-hostname]'),
+    ).map((el) => el.dataset.hostname as string);
+    const newOrder = [
+      ...sorted.map((m) => m.x),
+      ...configDomains.filter((d) => !presentDomains.has(d)),
+    ];
+    for (const domain of newOrder) {
+      const li = ul.querySelector<HTMLElement>(`[data-hostname="${domain}"]`);
+      if (li) ul.appendChild(li);
+    }
+  }
+
   setCardStatus('hostnames', 'ok');
   markUpdated();
 }
