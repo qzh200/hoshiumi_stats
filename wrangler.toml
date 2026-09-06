@@ -1,7 +1,12 @@
-# Cloudflare Pages 项目配置
-# 通过 `wrangler pages deploy dist` 或 Git 集成自动部署
+# Cloudflare 部署配置
+# Dashboard 的 `npx wrangler deploy` / `npx wrangler versions upload`
+# 通过 [assets] 把 dist/ 部署为 Worker + 静态资源（替代 pages_build_output_dir，
+# 这样 wrangler 不会触发"在 Pages 项目上应使用 wrangler pages deploy"警告）。
+# 本地手动部署仍可走 `pnpm run deploy`（wrangler pages deploy）。
 name = "hoshiumi-stats"
 compatibility_date = "2025-01-01"
-pages_build_output_dir = "dist"
 
 # 纯静态站:无 KV / D1 / R2 绑定,所有数据从浏览器 fetch Umami Share API
+# 静态资源从 dist/ 部署
+[assets]
+directory = "./dist"
