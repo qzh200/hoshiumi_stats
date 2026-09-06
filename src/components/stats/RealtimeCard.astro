@@ -1,0 +1,96 @@
+---
+/**
+ * 实时状态卡
+ * - 主显示:🟢 Online + 当前在线人数
+ * - 副:近 30 分钟 PV / Visitors / 国家数
+ * - client 首次进入立即拉,visible 时 30s 刷新,hidden 时停止
+ */
+---
+
+<article
+  class="glass px-6 py-6 sm:px-7 sm:py-7 flex flex-col gap-4"
+  data-stats-card="realtime"
+  data-stats-status="loading"
+>
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <span class="status-dot" id="realtime-status-dot" aria-hidden="true"></span>
+      <span
+        class="text-sm font-medium"
+        id="realtime-status-text"
+        data-initial="加载中…"
+        style="color: var(--color-ink-700)"
+      >
+        加载中…
+      </span>
+    </div>
+    <span class="text-[11px] uppercase tracking-wider text-ink-500">实时 · 近 30 分钟</span>
+  </div>
+
+  <div class="flex items-baseline gap-3">
+    <span
+      class="text-5xl sm:text-6xl font-semibold tabular-nums tracking-tight text-gradient"
+      data-stat-value="realtime-visitors"
+      aria-label="当前在线人数"
+    >
+      —
+    </span>
+    <span class="text-sm text-ink-700">人在浏览</span>
+  </div>
+
+  <div class="grid grid-cols-3 gap-2 sm:gap-3">
+    <div class="flex flex-col gap-0.5">
+      <span class="text-[10px] uppercase tracking-wider text-ink-500">浏览量</span>
+      <span class="text-lg sm:text-xl font-semibold text-ink-900 tabular-nums" data-stat-value="realtime-views">—</span>
+    </div>
+    <div class="flex flex-col gap-0.5">
+      <span class="text-[10px] uppercase tracking-wider text-ink-500">访客数</span>
+      <span class="text-lg sm:text-xl font-semibold text-ink-900 tabular-nums" data-stat-value="realtime-uniques">—</span>
+    </div>
+    <div class="flex flex-col gap-0.5">
+      <span class="text-[10px] uppercase tracking-wider text-ink-500">国家数</span>
+      <span class="text-lg sm:text-xl font-semibold text-ink-900 tabular-nums" data-stat-value="realtime-countries">—</span>
+    </div>
+  </div>
+
+  <div data-stats-loading-default hidden class="py-2">
+    <span class="loading-inline" aria-hidden="true"></span>
+    <span class="text-xs text-ink-700">正在连接 Umami…</span>
+  </div>
+  <div data-stats-error-default hidden>
+    <div class="flex flex-col gap-1">
+      <p class="text-xs text-ink-500" data-error-message>实时数据暂不可用</p>
+      <button
+        type="button"
+        data-retry="retry-realtime"
+        class="self-start text-[11px] px-3 py-1 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+      >
+        重试
+      </button>
+    </div>
+  </div>
+</article>
+
+<style>
+  .loading-inline {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 9999px;
+    background: linear-gradient(120deg, #7f9df2, #9d92ec);
+    animation: dotPulse 1.2s ease-in-out infinite;
+    vertical-align: middle;
+  }
+  @keyframes dotPulse {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(0.85);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+</style>

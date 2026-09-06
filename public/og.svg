@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f6fe" />
+      <stop offset="100%" stop-color="#e7ecfb" />
+    </linearGradient>
+    <linearGradient id="orbA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7f9df2" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#9d92ec" stop-opacity="0.1" />
+    </linearGradient>
+    <linearGradient id="orbB" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0a9cc" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#9d92ec" stop-opacity="0.1" />
+    </linearGradient>
+    <linearGradient id="title" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7f9df2" />
+      <stop offset="50%" stop-color="#9d92ec" />
+      <stop offset="100%" stop-color="#f0a9cc" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="200" cy="180" r="280" fill="url(#orbA)" />
+  <circle cx="1000" cy="500" r="260" fill="url(#orbB)" />
+  <g transform="translate(600 280)" text-anchor="middle" font-family="-apple-system, 'PingFang SC', sans-serif">
+    <text font-size="32" fill="#6b7194" letter-spacing="6">HOSHUMI NETWORK</text>
+    <text y="100" font-size="92" font-weight="700" fill="url(#title)">Observatory</text>
+    <text y="170" font-size="28" fill="#6b7194">Real-time analytics for hoshiumi.xyz</text>
+  </g>
+</svg>

@@ -1,0 +1,70 @@
+---
+/**
+ * 子域名排行
+ * - 服务列表来自 config/stats.yaml(配置驱动,顺序按 order 升序)
+ * - 进度条 + 访问量由 client script 填充(默认 "—")
+ */
+import { getEnabledServices } from '~/config/loader';
+
+const services = getEnabledServices();
+---
+
+<section
+  class="glass px-6 py-6 sm:px-7 sm:py-7"
+  data-stats-card="hostnames"
+  data-stats-status="loading"
+  aria-label="Hoshiumi 各子站访问量"
+>
+  <header class="flex items-baseline justify-between gap-3 mb-5">
+    <div>
+      <h2 class="text-base font-semibold text-ink-900">星海子站</h2>
+      <p class="text-xs text-ink-700 mt-0.5">近 24 小时访问量分布</p>
+    </div>
+    <span class="text-[11px] uppercase tracking-wider text-ink-500">域名</span>
+  </header>
+
+  <ul class="flex flex-col gap-4 sm:gap-5" id="hostname-list">
+    {
+      services.map((svc, i) => (
+        <li
+          class="entrance flex flex-col gap-2"
+          style={`--delay: ${120 + i * 60}ms`}
+          data-hostname={svc.domain}
+          data-hostname-name={svc.name}
+          data-hostname-url={svc.url}
+        >
+          <div class="flex items-center justify-between gap-3 text-sm">
+            <div class="min-w-0">
+              <a
+                href={svc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-medium text-ink-900 hover:text-[var(--color-primary)] transition-colors"
+              >
+                {svc.name}
+              </a>
+              <span class="ml-2 text-xs text-ink-700 truncate">{svc.domain}</span>
+            </div>
+            <span
+              class="text-sm font-semibold text-ink-900 tabular-nums shrink-0"
+              data-hostname-value
+            >
+              —
+            </span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" data-hostname-fill style="width: 0%"></div>
+          </div>
+          {svc.desc && <p class="text-[11px] text-ink-700/80">{svc.desc}</p>}
+        </li>
+      ))
+    }
+  </ul>
+
+  <div data-stats-error-default hidden class="mt-4">
+    <p class="text-xs text-ink-500">域名排行数据暂不可用</p>
+  </div>
+  <div data-stats-empty-default hidden class="mt-4 text-xs text-ink-500">
+    暂无访问记录
+  </div>
+</section>

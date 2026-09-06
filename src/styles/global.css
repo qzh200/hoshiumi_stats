@@ -1,0 +1,474 @@
+@import 'tailwindcss';
+
+/* ============================================================================
+ * Hoshiumi Network Observatory 全局样式
+ *
+ * 设计目标:与 hoshiumi_home / hoshiumi_drive 同一画风
+ *  - 主题色由 config/stats.yaml 提供,Layout.astro 在 <head> 内联注入
+ *    CSS 变量到 :root(--color-primary / --color-secondary / --color-accent
+ *    / --color-bg)。本文件【不】写死任何品牌色,只负责"中性结构色 +
+ *    通用组件样式",这样更换主题色不需要改 CSS。
+ *  - Tailwind 4 主题 token 集中在 @theme 块,组件内用 text-ink-700 /
+ *    bg-primary/30 等 utility 与全站视觉保持一致。@theme 内的颜色 token
+ *    全部引用下方 :root 注入的中性结构变量,做到跟随 data-theme 自动切换。
+ *  - 极光 / 玻璃 / 星点等场景装饰使用纯 CSS,避免污染 Tailwind 主题。
+ * ==========================================================================*/
+
+/* ----------------------------------------------------------------------------
+ * 1. Tailwind 4 主题 token(@theme → 自动产出对应 utility)
+ * --------------------------------------------------------------------------*/
+@theme {
+  /* 中性结构色(默认走 dark-on-light;暗色由 :root[data-theme=dark] 覆盖) */
+  --color-ink-900: var(--ink);
+  --color-ink-700: var(--ink-soft);
+  --color-ink-500: var(--ink-faint);
+  --color-ink-300: var(--ink-line);
+
+  /* 半透明色变量前缀,opacity 修饰符基于它 */
+  --color-primary: var(--color-primary, #7f9df2);
+  --color-secondary: var(--color-secondary, #f0a9cc);
+  --color-accent: var(--color-accent, #9d92ec);
+  --color-bg: var(--color-bg, #f4f6fe);
+  --color-bg-soft: var(--color-bg-soft, #eef1fb);
+
+  /* 容器最大宽度 */
+  --breakpoint-shell: 1040px;
+
+  /* 圆角(与 home 一致:22px) */
+  --radius-card: 22px;
+  --radius-pill: 9999px;
+
+  /* 入场动画(配合 .entrance + --delay) */
+  --animate-fade-in: fadeIn 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-dot: pulseDot 1.6s ease-in-out infinite;
+}
+
+/* ----------------------------------------------------------------------------
+ * 2. 中性结构 token(由 :root 注入,与 hoshiumi_home 完全一致)
+ * --------------------------------------------------------------------------*/
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink: #3d4266;
+  --ink-soft: #6c729b;
+  --ink-faint: #a2a6c6;
+  --ink-line: #c5c9d8;
+  --line: 122 129 186;
+  --shadow: 90 98 164;
+  --card-fill: rgb(255 255 255 / var(--card-bg-opacity, 0.62));
+  --card-fill-hover: rgb(255 255 255 / calc(var(--card-bg-opacity, 0.62) + 0.16));
+  --card-border-opacity: 0.35;
+  --card-bg-opacity: 0.6;
+  --card-blur: 20px;
+  --card-radius: 22px;
+  --star: 104 128 226;
+  --orb-opacity: 0.5;
+  --noise-opacity: 0.045;
+  --color-bg-soft: #eef1fb;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #e9ebfd;
+  --ink-soft: #a4aad0;
+  --ink-faint: #9aa0c4;
+  --ink-line: #6b7194;
+  --line: 150 160 232;
+  --shadow: 3 6 24;
+  --card-fill: rgb(17 21 48 / var(--card-bg-opacity, 0.6));
+  --card-fill-hover: rgb(32 38 82 / calc(var(--card-bg-opacity, 0.6) + 0.14));
+  --card-border-opacity: 0.35;
+  --card-bg-opacity: 0.6;
+  --star: 186 201 255;
+  --orb-opacity: 0.36;
+  --noise-opacity: 0.06;
+  --color-bg-soft: #181f48;
+}
+
+/* ----------------------------------------------------------------------------
+ * 3. 基础
+ * --------------------------------------------------------------------------*/
+html {
+  background: var(--color-bg, #f4f6fe);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  background: transparent;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC',
+    'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-primary, #7f9df2) 30%, transparent);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * 4. 极光背景(与 hoshiumi_home 同结构:渐变氛围 + 光斑 + 星星 + 噪点)
+ * --------------------------------------------------------------------------*/
+.bg-scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: var(--color-bg, #f4f6fe);
+}
+.bg-scene__layer {
+  position: absolute;
+  inset: 0;
+}
+.bg-scene__tint {
+  background: linear-gradient(
+    172deg,
+    color-mix(in srgb, var(--color-primary, #7f9df2) 9%, transparent) 0%,
+    transparent 36%,
+    transparent 64%,
+    color-mix(in srgb, var(--color-secondary, #f0a9cc) 8%, transparent) 100%
+  );
+}
+.orb {
+  position: absolute;
+  width: clamp(300px, 46vw, 620px);
+  height: clamp(300px, 46vw, 620px);
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: var(--orb-opacity);
+  will-change: transform;
+}
+.orb--a {
+  top: -18%;
+  left: -8%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-primary, #7f9df2) 55%, transparent),
+    transparent 74%
+  );
+}
+.orb--b {
+  top: -2%;
+  right: -14%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-secondary, #f0a9cc) 50%, transparent),
+    transparent 74%
+  );
+}
+.orb--c {
+  bottom: -22%;
+  left: 16%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent, #9d92ec) 48%, transparent),
+    transparent 76%
+  );
+}
+@keyframes orb-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(7vw, -4vh, 0) scale(1.08);
+  }
+}
+@keyframes orb-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-6vw, 6vh, 0) scale(0.94);
+  }
+}
+@keyframes orb-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.04);
+  }
+  to {
+    transform: translate3d(4vw, -7vh, 0) scale(0.98);
+  }
+}
+.bg-scene--moving .orb--a {
+  animation: orb-drift-a 64s ease-in-out infinite alternate;
+}
+.bg-scene--moving .orb--b {
+  animation: orb-drift-b 84s ease-in-out infinite alternate;
+}
+.bg-scene--moving .orb--c {
+  animation: orb-drift-c 104s ease-in-out infinite alternate;
+}
+.star {
+  position: absolute;
+  border-radius: 9999px;
+  background: currentColor;
+  color: rgb(var(--star));
+  animation: star-twinkle 6s ease-in-out infinite;
+}
+.star--sm {
+  width: 1.5px;
+  height: 1.5px;
+  opacity: 0.5;
+}
+.star--lg {
+  width: 2.5px;
+  height: 2.5px;
+  opacity: 0.85;
+  box-shadow: 0 0 6px 0 rgb(var(--star) / 0.8);
+}
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+.bg-scene__noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  background-size: 160px 160px;
+}
+
+/* ----------------------------------------------------------------------------
+ * 5. 玻璃卡片(与 hoshiumi_home 一致:22px 圆角 + 20px 毛玻璃)
+ * --------------------------------------------------------------------------*/
+.glass {
+  background: var(--card-fill);
+  -webkit-backdrop-filter: blur(var(--card-blur)) saturate(1.05);
+  backdrop-filter: blur(var(--card-blur)) saturate(1.05);
+  border: 1px solid rgb(var(--line) / var(--card-border-opacity));
+  border-radius: var(--card-radius);
+  box-shadow: 0 14px 32px -24px rgb(var(--shadow) / 0.55);
+  transition:
+    transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease;
+}
+.glass:hover {
+  background: var(--card-fill-hover);
+}
+
+/* ----------------------------------------------------------------------------
+ * 6. 入场动画(与 hoshiumi_home 一致)
+ * --------------------------------------------------------------------------*/
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.entrance {
+  animation: fadeIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* ----------------------------------------------------------------------------
+ * 7. 状态点 / 进度条 / 通用工具
+ * --------------------------------------------------------------------------*/
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+  animation: pulseDot 1.6s ease-in-out infinite;
+}
+.status-dot--off {
+  background: #9aa0c4;
+  animation: none;
+  box-shadow: none;
+}
+@keyframes pulseDot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.55;
+  }
+}
+
+.progress-track {
+  position: relative;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-primary, #7f9df2) 15%, transparent),
+    color-mix(in srgb, var(--color-accent, #9d92ec) 15%, transparent)
+  );
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary, #7f9df2) 0%,
+    var(--color-accent, #9d92ec) 60%,
+    var(--color-secondary, #f0a9cc) 100%
+  );
+  transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.text-gradient {
+  background: linear-gradient(
+    120deg,
+    var(--color-primary, #7f9df2) 0%,
+    var(--color-accent, #9d92ec) 50%,
+    var(--color-secondary, #f0a9cc) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-primary, #7f9df2) 25%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+/* ----------------------------------------------------------------------------
+ * 8. 顶部两角按钮(与 hoshiumi_home 镜像)
+ *   - 右上角 .theme-toggle:三态切换(浅色 / 深色 / 跟随系统)
+ *   - 左上角 .back-link:跳回 hoshiumi.xyz
+ * 两个按钮视觉完全一致(40px 圆形 + 玻璃 + 蓝色 hover)
+ * --------------------------------------------------------------------------*/
+.theme-toggle {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(18px, env(safe-area-inset-right));
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--line) / var(--card-border-opacity, 0.4));
+  background: var(--card-fill);
+  color: var(--ink-soft);
+  backdrop-filter: blur(var(--card-blur, 18px));
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  color: var(--color-primary);
+  border-color: rgb(var(--line) / 0.7);
+}
+.theme-toggle__icon {
+  display: none;
+  width: 18px;
+  height: 18px;
+}
+.theme-toggle__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+:root[data-theme-choice='light'] .theme-toggle__icon--light,
+:root[data-theme-choice='dark'] .theme-toggle__icon--dark,
+:root[data-theme-choice='system'] .theme-toggle__icon--system {
+  display: block;
+}
+
+.back-link {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  left: max(18px, env(safe-area-inset-left));
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--line) / var(--card-border-opacity, 0.4));
+  background: var(--card-fill);
+  color: var(--ink-soft);
+  backdrop-filter: blur(var(--card-blur, 18px));
+  text-decoration: none;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+.back-link:hover {
+  transform: translateY(-2px);
+  color: var(--color-primary);
+  border-color: rgb(var(--line) / 0.7);
+}
+.back-link svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+/* ----------------------------------------------------------------------------
+ * 9. 页脚(与 hoshiumi_home 同一份 .footer 样式)
+ * --------------------------------------------------------------------------*/
+.footer {
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--layout-max-width, 1040px);
+  padding: 6px 24px calc(22px + env(safe-area-inset-bottom));
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 0.8rem;
+  line-height: 1.9;
+  opacity: 0.9;
+}
+.footer__title {
+  margin: 0;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.footer__desc {
+  margin: 2px 0 0;
+}
+.footer__copy {
+  margin: 2px 0 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+}

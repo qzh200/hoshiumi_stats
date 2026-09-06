@@ -1,0 +1,54 @@
+---
+/**
+ * 错误占位
+ * - 默认显示一个简洁提示 + 重试按钮(由 client script 绑定)
+ * - 文案简短,不打扰主流程
+ */
+interface Props {
+  /** 错误 ID,客户端用此 ID 绑定重试按钮 */
+  retryId?: string;
+  message?: string;
+  compact?: boolean;
+}
+
+const { retryId, message = '数据加载失败', compact = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex flex-col items-center justify-center gap-2 text-center',
+    compact ? 'py-2' : 'py-4',
+  ]}
+  role="alert"
+  aria-live="polite"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="text-secondary"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="12"></line>
+    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+  </svg>
+  <p class="text-sm text-ink-700">{message}</p>
+  {
+    retryId && (
+      <button
+        type="button"
+        data-retry={retryId}
+        class="text-xs px-3 py-1 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+      >
+        重试
+      </button>
+    )
+  }
+</div>

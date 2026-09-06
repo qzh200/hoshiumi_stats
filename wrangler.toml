@@ -1,0 +1,7 @@
+# Cloudflare Pages 项目配置
+# 通过 `wrangler pages deploy dist` 或 Git 集成自动部署
+name = "hoshiumi-stats"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
+
+# 纯静态站:无 KV / D1 / R2 绑定,所有数据从浏览器 fetch Umami Share API

@@ -1,0 +1,85 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import Header from '~/components/layout/Header.astro';
+import Footer from '~/components/layout/Footer.astro';
+import RealtimeCard from '~/components/stats/RealtimeCard.astro';
+import StatCard from '~/components/stats/StatCard.astro';
+import HostnameList from '~/components/stats/HostnameList.astro';
+import TrendChart from '~/components/stats/TrendChart.astro';
+---
+
+<Layout
+  title="星海观测台 · Hoshiumi Network Observatory"
+  description="星海观测台：Hoshiumi 全站实时流量分析。所有数据由你的浏览器直连 Umami Cloud 拉取——本站无后端、无数据库、无 Cookie、无埋点。"
+>
+  <main class="mx-auto max-w-shell px-4 sm:px-6 pt-20 sm:pt-24 pb-8">
+    <!-- 顶部 Header -->
+    <Header />
+
+    <!-- 实时状态 -->
+    <section class="entrance mt-6 sm:mt-8" style="--delay: 80ms" aria-label="实时状态">
+      <RealtimeCard />
+    </section>
+
+    <!-- 今日概览 -->
+    <section class="mt-6 sm:mt-8" aria-label="今日概览">
+      <h2 class="entrance text-sm font-semibold text-ink-700 mb-3 px-1" style="--delay: 120ms">
+        今日概览
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="entrance" style="--delay: 160ms">
+          <StatCard
+            name="today-pageviews"
+            label="浏览量"
+            iconName="eye"
+            value="—"
+            hint="今日"
+            retryId="retry-today-pageviews"
+          />
+        </div>
+        <div class="entrance" style="--delay: 220ms">
+          <StatCard
+            name="today-visitors"
+            label="访客数"
+            iconName="users"
+            value="—"
+            hint="今日"
+            retryId="retry-today-visitors"
+          />
+        </div>
+        <div class="entrance" style="--delay: 280ms">
+          <StatCard
+            name="today-visits"
+            label="访问次数"
+            iconName="mouse-pointer-click"
+            value="—"
+            hint="今日"
+            retryId="retry-today-visits"
+          />
+        </div>
+        <div class="entrance" style="--delay: 340ms">
+          <StatCard
+            name="today-avg-time"
+            label="平均时长"
+            iconName="clock"
+            value="—"
+            hint="今日"
+            retryId="retry-today-avg-time"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- 趋势 + 子域名(2 列) -->
+    <section class="mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5" aria-label="趋势与子站">
+      <div class="entrance lg:col-span-2" style="--delay: 380ms">
+        <TrendChart />
+      </div>
+      <div class="entrance" style="--delay: 440ms">
+        <HostnameList />
+      </div>
+    </section>
+
+    <Footer />
+  </main>
+</Layout>

@@ -1,0 +1,121 @@
+# =============================================================================
+# stats.yaml —— Hoshiumi Network Observatory 站点配置
+# =============================================================================
+# 本项目是「配置驱动」的:所有可调参数(Umami 凭证 / 主题色 / 子域名
+# 排行)放在本文件,所有 .astro / .ts 源码通过 src/config/loader.ts 读取。
+# 修改本文件 + 重新构建即可生效,无需改任何代码。
+#
+# 校验:
+#   配置不合法(缺字段 / 格式错误 / 枚举越界)会在 pnpm build 启动时直接
+#   失败并给出精确到字段的中文提示,由 src/config/schema.ts 负责。
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Umami Cloud Share API
+# -----------------------------------------------------------------------------
+umami:
+  # 公共 share ID,来自分享 URL 末段
+  # https://cloud.umami.is/analytics/us/share/<SHARE_ID>
+  shareId: yuYHKpwZACgZEQ2g
+
+  # 目标网站 ID
+  websiteId: e88928b4-1a8c-403a-ad3f-96a264e8165a
+
+  # Umami Cloud US 区 API 基址
+  baseUrl: https://cloud.umami.is/analytics/us
+
+  # share context 头值(用户规格要求 1;Umami 文档样例为 "share")
+  # 如发现接口不接受,可改回 "share" 或 0
+  shareContext: '1'
+
+  # 网络请求超时(毫秒)
+  requestTimeoutMs: 12000
+
+  # 实时面板刷新间隔(毫秒)
+  realtimePollMs: 30000
+
+  # 概览 / 趋势 / 域名排行刷新间隔(毫秒)
+  statsPollMs: 60000
+
+# -----------------------------------------------------------------------------
+# 主题(浅色 / 深色 双套)
+# -----------------------------------------------------------------------------
+theme:
+  light:
+    background: '#f4f6fe'
+    primary: '#7f9df2'
+    secondary: '#f0a9cc'
+    accent: '#9d92ec'
+  dark:
+    background: '#1c2145'
+    primary: '#9fb6ff'
+    secondary: '#f2b4dc'
+    accent: '#bdb0ff'
+
+# -----------------------------------------------------------------------------
+# 极光背景(与 hoshiumi_home / hoshiumi_drive 一致:光斑 + 渐变 + 星星 + 噪点)
+# -----------------------------------------------------------------------------
+background:
+  stars:
+    enabled: true
+    count: 22
+
+# -----------------------------------------------------------------------------
+# 子域名排行(HostnameList 数据源)
+# -----------------------------------------------------------------------------
+# 字段:
+#   id         唯一标识
+#   name       显示名(短)
+#   domain     完整域名(用于 Umami hostname metric 对照)
+#   url        可点击的链接地址
+#   desc       一句话描述
+#   icon       lucide 图标(可选;前端目前不展示,保留为扩展位)
+#   enabled    是否显示;false 时该行不渲染
+#   order      显示顺序(升序,缺省追加到末尾)
+# 添加新服务:复制一段,改字段即可,无需改任何源码。
+# -----------------------------------------------------------------------------
+services:
+  - id: blog
+    name: 博客
+    domain: blog.hoshiumi.xyz
+    url: https://blog.hoshiumi.xyz
+    desc: 星海日和 · 技术 / 游戏 / 生活
+    icon: book-open
+    enabled: true
+    order: 10
+
+  - id: drive
+    name: 云盘
+    domain: drive.hoshiumi.xyz
+    url: https://drive.hoshiumi.xyz
+    desc: 星海云仓 · 文件与资源
+    icon: cloud
+    enabled: true
+    order: 20
+
+  - id: home
+    name: 主页
+    domain: hoshiumi.xyz
+    url: https://hoshiumi.xyz
+    desc: 个人主页 · 星海日和
+    icon: home
+    enabled: true
+    order: 30
+
+  - id: status
+    name: 状态
+    domain: status.hoshiumi.xyz
+    url: https://status.hoshiumi.xyz
+    desc: 星海信标 · 服务运行状态
+    icon: activity
+    enabled: true
+    order: 40
+
+  - id: sink
+    name: 短链
+    domain: sink.hoshiumi.xyz
+    url: https://sink.hoshiumi.xyz
+    desc: 星链 · 短链接服务
+    icon: link
+    enabled: true
+    order: 50

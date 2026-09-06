@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fetch Diagnostic</title>
+  <style>
+    body { font: 14px/1.6 -apple-system, monospace; padding: 20px; }
+    .row { padding: 8px; border: 1px solid #ccc; margin: 8px 0; border-radius: 6px; }
+    .ok { background: #d4f4dd; }
+    .err { background: #f4d4d4; }
+    pre { white-space: pre-wrap; word-break: break-all; margin: 4px 0 0; }
+  </style>
+</head>
+<body>
+  <h1>Umami Cross-Origin Fetch Diagnostic</h1>
+
+  <div class="row" id="r1"><b>1. Plain GET (no headers, no preflight)</b><pre></pre></div>
+  <div class="row" id="r2"><b>2. GET with x-umami-share-token (triggers preflight)</b><pre></pre></div>
+  <div class="row" id="r3"><b>3. Same-origin relative fetch (control)</b><pre></pre></div>
+
+  <script>
+    const out = (id, ok, info) => {
+      const el = document.getElementById(id);
+      el.className = 'row ' + (ok ? 'ok' : 'err');
+      el.querySelector('pre').textContent = info;
+    };
+    const URL = 'https://cloud.umami.is/analytics/us/api/share/yuYHKpwZACgZEQ2g';
+
+    (async () => {
+      // 1. plain
+      try {
+        const t0 = performance.now();
+        const r = await fetch(URL);
+        const j = await r.json();
+        const ms = (performance.now() - t0).toFixed(0);
+        out('r1', true, `status=${r.status} ${ms}ms tokenLen=${(j.token||'').length}`);
+      } catch (e) {
+        out('r1', false, `${e.name}: ${e.message}`);
+      }
+
+      // 2. with custom headers (preflight)
+      try {
+        const t0 = performance.now();
+        const r = await fetch(URL, {
+          headers: {
+            'x-umami-share-token': 'fake',
+            'x-umami-share-context': '1',
+            'accept': 'application/json',
+          },
+        });
+        const j = await r.json();
+        const ms = (performance.now() - t0).toFixed(0);
+        out('r2', true, `status=${r.status} ${ms}ms tokenLen=${(j.token||'').length}`);
+      } catch (e) {
+        out('r2', false, `${e.name}: ${e.message}`);
+      }
+
+      // 3. same-origin control
+      try {
+        const t0 = performance.now();
+        const r = await fetch('/diag.html');
+        const ms = (performance.now() - t0).toFixed(0);
+        out('r3', r.ok, `status=${r.status} ${ms}ms`);
+      } catch (e) {
+        out('r3', false, `${e.name}: ${e.message}`);
+      }
+    })();
+  </script>
+</body>
+</html>

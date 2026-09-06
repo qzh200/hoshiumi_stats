@@ -1,0 +1,63 @@
+---
+/**
+ * 服务信息卡(纯静态,无 fetch)
+ * - 展示技术栈 / 基础设施信息
+ * - 与 HostnameList 视觉一致
+ */
+const ITEMS: Array<{ label: string; value: string; icon: string }> = [
+  { label: '基础设施', value: 'Cloudflare Pages', icon: 'cloud' },
+  { label: '统计服务', value: 'Umami Cloud', icon: 'chart' },
+  { label: '架构', value: '浏览器直连 · 纯静态', icon: 'code' },
+  { label: '数据链路', value: '浏览器 → Umami', icon: 'link' },
+  { label: 'Cookie', value: '无', icon: 'shield' },
+  { label: '后端', value: '无', icon: 'slash' },
+];
+---
+
+<section class="glass px-6 py-6 sm:px-7 sm:py-7" aria-label="观测站技术信息">
+  <header class="mb-5">
+    <h2 class="text-base font-semibold text-ink-900">服务信息</h2>
+    <p class="text-xs text-ink-500 mt-0.5">观测站自身的技术信息</p>
+  </header>
+
+  <ul class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+    {
+      ITEMS.map((it) => (
+        <li class="flex items-start gap-2.5 p-2.5 rounded-2xl bg-white/40 dark:bg-white/5">
+          <span
+            class="shrink-0 w-7 h-7 rounded-xl flex items-center justify-center"
+            style="background: linear-gradient(135deg, rgba(127,157,242,0.18), rgba(157,146,236,0.18))"
+            aria-hidden="true"
+          >
+            {it.icon === 'cloud' && (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7f9df2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+            )}
+            {it.icon === 'chart' && (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9d92ec" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 4 4 5-6"/></svg>
+            )}
+            {it.icon === 'code' && (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7f9df2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            )}
+            {it.icon === 'link' && (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9d92ec" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            )}
+            {it.icon === 'shield' && (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#f0a9cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            )}
+            {it.icon === 'slash' && (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#aab0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            )}
+          </span>
+          <div class="min-w-0">
+            <p class="text-[10px] uppercase tracking-wider text-ink-500">{it.label}</p>
+            <p class="text-xs font-medium text-ink-900 truncate">{it.value}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="mt-5 text-[11px] text-ink-700/80 leading-relaxed">
+    所有数据均由当前浏览器直接请求 Umami Cloud 获取,本站不存任何持久化数据,关闭页面即停止所有请求。
+  </p>
+</section>

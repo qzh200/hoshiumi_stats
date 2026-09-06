@@ -1,0 +1,17 @@
+---
+/**
+ * 底部 Footer —— 与 hoshiumi_home 视觉一致
+ * - 同一份三行结构:标题 / 描述 / 版权
+ * - 标题「Hoshiumi · 星海日和」,描述「于群星与潮汐之间,记录旅途与幻想」
+ * - 中文以与全站画风统一
+ */
+const startYear = 2026;
+const year = new Date().getFullYear();
+const copy = year > startYear ? `© ${startYear}–${year} Hoshiumi` : `© ${year} Hoshiumi`;
+---
+
+<footer class="entrance footer" style="--delay: 700ms">
+  <p class="footer__title">Hoshiumi · 星海日和</p>
+  <p class="footer__desc">于群星与潮汐之间,记录旅途与幻想</p>
+  <p class="footer__copy">{copy}</p>
+</footer>

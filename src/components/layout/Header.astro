@@ -1,0 +1,54 @@
+---
+/**
+ * 顶部「菜单栏」Header
+ * - 极简风:左侧 logo + 站名 + 副标,右侧更新时间
+ * - 与 hoshiumi_home 共享玻璃质感(--card-fill / --card-blur / --card-radius)
+ * - 文案全中文,与全站画风统一
+ */
+---
+
+<header
+  class="entrance glass px-6 sm:px-8 py-5 flex items-center justify-between gap-4"
+  style="--delay: 0ms"
+>
+  <div class="flex items-center gap-3 min-w-0">
+    <div
+      class="logo-mark shrink-0 w-10 h-10 rounded-card flex items-center justify-center"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17 L9 11 L13 14 L21 6" />
+        <circle cx="3" cy="17" r="1.4" fill="white" />
+        <circle cx="9" cy="11" r="1.4" fill="white" />
+        <circle cx="13" cy="14" r="1.4" fill="white" />
+        <circle cx="21" cy="6" r="1.4" fill="white" />
+      </svg>
+    </div>
+    <div class="min-w-0">
+      <h1 class="text-base sm:text-lg font-semibold tracking-tight text-ink-900 truncate">
+        星海观测台
+      </h1>
+      <p class="text-xs text-ink-700 truncate">全站实时流量分析</p>
+    </div>
+  </div>
+
+  <div class="text-right shrink-0">
+    <p class="text-[11px] uppercase tracking-wider text-ink-500">最近更新</p>
+    <p
+      id="last-update-time"
+      class="text-xs sm:text-sm font-mono text-ink-700 tabular-nums"
+      data-initial="—"
+    >
+      —
+    </p>
+  </div>
+</header>
+
+<style>
+  .logo-mark {
+    background: linear-gradient(135deg, #7f9df2 0%, #9d92ec 60%, #f0a9cc 100%);
+    box-shadow:
+      0 4px 14px -4px rgba(127, 157, 242, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+</style>
