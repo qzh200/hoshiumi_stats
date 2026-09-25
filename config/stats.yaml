@@ -119,3 +119,12 @@ services:
     icon: link
     enabled: true
     order: 50
+
+  - id: ip
+    name: 坐标
+    domain: ip.hoshiumi.xyz
+    url: https://ip.hoshiumi.xyz
+    desc: 星海坐标 · IP 查询与网络诊断
+    icon: globe
+    enabled: true
+    order: 25
